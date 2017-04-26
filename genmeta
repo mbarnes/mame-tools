@@ -1,0 +1,19 @@
+#!/bin/bash
+
+set -euo pipefail
+
+for TAG in `find -maxdepth 1 -type d -name 'mame0*'`
+do
+  OUTFILE="$TAG.dtd"
+  if [ ! -e "$OUTFILE" ]
+  then
+    $TAG/mame*64 -listxml | head --lines=200 | \
+      sed --quiet '0,/^$/p' | head --lines -1 > $OUTFILE
+  fi
+
+  OUTFILE="$TAG.usage"
+  if [ ! -e "$OUTFILE" ]
+  then
+    $TAG/mame*64 -showusage | grep "^-" | sort > $OUTFILE
+  fi
+done

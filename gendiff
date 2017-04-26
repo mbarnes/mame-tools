@@ -1,0 +1,39 @@
+#!/bin/bash
+
+set -euo pipefail
+
+PREVTAG=''
+
+for TAG in `find -maxdepth 1 -type d -name 'mame0*' | sort`
+do
+  THIS=`expr "$TAG" : '.*\([[:digit:]]\{4\}\)'`
+  PREV=`printf %04d \`expr "$THIS" - 1\``
+
+  # Skip the 1st loop iteration.
+  if [ ! -z "$PREVTAG" ]
+  then
+    FILE1="$PREVTAG.dtd"
+    FILE2="$TAG.dtd"
+    OUTFILE="dtd-$PREV-$THIS.diff"
+    if [ ! -e "$OUTFILE" -a -e "$FILE1" -a -e "$FILE2" ]
+    then
+      # diff exits with 1 if inputs are different.
+      set +e
+      diff -up "$FILE1" "$FILE2" > $OUTFILE
+      set -e
+    fi
+
+    FILE1="$PREVTAG.usage"
+    FILE2="$TAG.usage"
+    OUTFILE="usage-$PREV-$THIS.diff"
+    if [ ! -e "$OUTFILE" -a -e "$FILE1" -a -e "$FILE2" ]
+    then
+      # diff exits with 1 if inputs are different.
+      set +e
+      diff -up "$FILE1" "$FILE2" > $OUTFILE
+      set -e
+    fi
+  fi
+
+  PREVTAG="$TAG"
+done

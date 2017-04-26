@@ -1,0 +1,6 @@
+#!/bin/bash
+
+set -euo pipefail
+
+rm --force ./mame64
+ln --symbolic ./$1/mame*64 mame64
