@@ -4,6 +4,9 @@ set -euo pipefail
 
 NCPUS=2
 
+SUBTARGET=mame		# build everything
+#SUBTARGET=arcade	# build arcade games
+
 cd ./mame
 git fetch
 cd -
@@ -12,20 +15,31 @@ if [ -z "$1" ]
 then
   cd ./mame
   git pull --rebase
-  make -j $NCPUS SUBTARGET=arcade
+  make -j $NCPUS SUBTARGET=$SUBTARGET
   cd -
 else
   git-new-workdir ./mame $1
   cd ./$1
   git checkout $1
+
   sed -i "s/^# USE_QTDEBUG = 1/USE_QTDEBUG = 0/" makefile
-  grep --quiet "SUBTARGET=arcade" README.md
-  if [ $? -eq 0 ]
+
+  if [ -e README.md ]
   then
-    make -j $NCPUS SUBTARGET=arcade
+    set +e
+    grep --quiet "SUBTARGET=" README.md
+    USE_SUBTARGET=$? # 0=true / 1=false
+    set -e
+  else
+    USE_SUBTARGET=1  # 1=false
+  fi
+
+  if [ $USE_SUBTARGET -eq 0 ]
+  then
+    make -j $NCPUS SUBTARGET=$SUBTARGET
     make clean
   else
-    make -j $NCPUS
+    make -j $NCPUS OSD=osdmini
     # 'make clean' used to destroy the binary.
   fi
   cd -
