@@ -1,0 +1,26 @@
+#!/usr/bin/python3
+
+import collections
+import configparser
+import sys
+
+import xml.etree.ElementTree as ElementTree
+
+def main(source):
+    result_group = collections.OrderedDict()
+
+    for event, element in ElementTree.iterparse(source):
+        if element.tag in ('machine', 'game'):
+            try:
+                machine_name = element.attrib['name']
+                machine_type = element.attrib['type']
+                result_group[machine_name] = machine_type
+            except KeyError:
+                continue
+
+    config = configparser.ConfigParser()
+    config['DEFAULT'] = result_group
+    config.write(sys.stdout, space_around_delimiters=False)
+
+if __name__ == '__main__':
+    main(sys.stdin)
