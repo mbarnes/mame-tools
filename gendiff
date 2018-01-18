@@ -4,10 +4,10 @@ set -euo pipefail
 
 PREVTAG=''
 
-for TAG in `find -maxdepth 1 -type d -name 'mame0*' | sort`
+for TAG in $(find -maxdepth 1 -type d -name 'mame0*' | sort)
 do
-  THIS=`expr "$TAG" : '.*\([[:digit:]]\{4\}\)'`
-  PREV=`printf %04d \`expr "$THIS" - 1\``
+  THIS=$(expr "$TAG" : '.*\([[:digit:]]\{4\}\)')
+  PREV=$(printf %04d $(expr "$THIS" - 1))
 
   # Skip the 1st loop iteration.
   if [ ! -z "$PREVTAG" ]
