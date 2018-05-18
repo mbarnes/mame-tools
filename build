@@ -48,4 +48,5 @@ else
   cd -
   ./genmeta
   ./gendiff
+  $1/mame*64 -listxml | ./machinetype > $1.types
 fi
