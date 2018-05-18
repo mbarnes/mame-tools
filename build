@@ -22,6 +22,9 @@ else
   cd ./$1
   git checkout $1
 
+  # HEAD commit on master adds machine type to -listxml.
+  git cherry-pick master
+
   sed -i "s/^# USE_QTDEBUG = 1/USE_QTDEBUG = 0/" makefile
 
   if [ -e README.md ]
